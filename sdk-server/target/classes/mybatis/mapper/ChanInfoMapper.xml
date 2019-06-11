@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="me.gacl.mapping.orderMapper"就是me.gacl.mapping(包名)+orderMapper(orderMapper.xml文件去除后缀)
+-->
+<!-- 渠道数据映射 -->
+<mapper namespace="com.spier.mapper.IChannelInfoMapper">
+     
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="channelInfoResultMap" type="com.spier.common.bean.db.ChannelInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mInd" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mChanNo" column="chan_no" />
+		<result property="mChanDesc" column="chan_desc" />
+		<result property="mTaskSwitchState" column="task_switch" />
+		<result property="mSingleUserMaxTasks" column="s_user_max_tasks" />
+		<result property="mRsaPubKB64" column="rsa_pub_key_b64" />
+		<result property="mRsaPrivKB64" column="rsa_priv_key_b64" />
+		<result property="mChanPostback" column="postback" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="channelInfoParamMap" type="com.spier.common.bean.db.ChannelInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mChanNo" resultMap="channelInfoResultMap" />
+		<parameter property="mChanDesc" resultMap="channelInfoResultMap" />
+		<parameter property="mTaskSwitchState" resultMap="channelInfoResultMap" />
+		<parameter property="mRsaPubKB64" resultMap="channelInfoResultMap" />
+		<parameter property="mRsaPrivKB64" resultMap="channelInfoResultMap" />
+		<parameter property="mSingleUserMaxTasks" resultMap="channelInfoResultMap" />
+		<parameter property="mChanPostback" resultMap="channelInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 
+	         根据渠道号查询得到一个渠道信息对象。sql语句中用了别名，用于映射实体类中的属性名称。
+	         id是dao中的接口类的方法
+	-->
+	<select id="getChanInfoByChanNo" parameterType="string" resultMap="channelInfoResultMap">
+		select * from ${tableName} where chan_no=#{chanNo}
+	</select>
+	
+	<select id="getChanInfoByIndex" parameterType="int" resultMap="channelInfoResultMap">
+		select * from ${tableName} where _id=#{ind}
+	</select>
+	
+	<!-- 根据渠道号查询RSA私钥 -->
+	<select id="getRSAPrivKStrByChanNo" parameterType="string" resultType="string">
+		select rsa_priv_key_b64 from ${tableName} where chan_no=#{chanNo}
+	</select>
+	
+	<!-- 插入渠道信息 -->
+	<insert id="insertChanInfo" useGeneratedKeys="true" keyProperty="chInfo.mInd" keyColumn="_id"
+	    parameterType="com.spier.common.bean.db.ChannelInfo" parameterMap="channelInfoParamMap">
+	    insert into ${tableName} 
+	    (
+	    	chan_no, chan_desc, task_switch, s_user_max_tasks, postback,
+	    	rsa_pub_key_b64, rsa_priv_key_b64, create_time
+	    )
+	    values 
+	    (
+	    	#{chInfo.mChanNo}, #{chInfo.mChanDesc}, #{chInfo.mTaskSwitchState}, #{chInfo.mSingleUserMaxTasks}, 
+	    	#{chInfo.mChanPostback}, #{chInfo.mRsaPubKB64}, #{chInfo.mRsaPrivKB64}, NOW()
+	    )
+	</insert>
+	
+	<update id="updateChanInfoByChanNo" parameterMap="channelInfoParamMap">
+	    UPDATE ${tableName} t SET 
+		    t.chan_desc = #{chInfo.mChanDesc}, t.task_switch = #{chInfo.mTaskSwitchState}, 
+		    t.s_user_max_tasks = #{chInfo.mSingleUserMaxTasks}, t.postback = #{chInfo.mChanPostback}
+	    WHERE t.chan_no = #{chanNo}
+	</update>
+	
+	<!-- 获取所有渠道信息 -->
+	<select id="getAll" resultMap="channelInfoResultMap">
+	    select * from ${tableName}
+	</select>
+	
+	<!-- 查询任务开关状态 -->
+	<select id="getChanTaskSwitchState" resultType="Integer">
+	    select task_switch from ${tableName} 
+	    where chan_no=#{chNo}
+	</select>
+
+	<!-- 删除渠道信息 -->
+	<delete id="deleteByIndex" parameterType="int">
+	    delete from ${tableName} where _id=#{ind}
+	</delete>
+	
+	<!-- 删除渠道信息 -->
+	<delete id="deleteByChNo" parameterType="string">
+	    delete from ${tableName} where chan_no=#{chNo}
+	</delete>
+	
+</mapper>

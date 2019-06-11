@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spier.mapper.IChanCfgsInfoMapper">
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="ChanCfgsInfoResultMap" type="com.spier.common.bean.db.ChanCfgsInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mChanNo" column="chan_no" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mCreateTime" column="create_time" />
+		<result property="mCfgs" column="cfgs" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="ChanCfgsInfoParamMap" type="com.spier.common.bean.db.ChanCfgsInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mCreateTime" resultMap="ChanCfgsInfoResultMap" />
+		<parameter property="mCfgs" resultMap="ChanCfgsInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 根据渠道号获取配置信息 -->
+	<select id="getByChanNo" parameterType="java.lang.String" resultMap="ChanCfgsInfoResultMap">
+	    SELECT * FROM ${tableName} WHERE chan_no = #{chan}
+	</select>
+</mapper>

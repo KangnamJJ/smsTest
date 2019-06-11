@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spier.mapper.job.ICPIMaterialInfoMapper">
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="CPIMaterialInfoResultMap" type="com.spier.common.bean.db.CPIMaterialInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mIndex" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mCreateTime" column="create_time" />
+		<result property="mChangeTime" column="change_time" />
+		<result property="mPixel" column="pixel" />
+		<result property="mUrl" column="url" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="CPIMaterialInfoParamMap" type="com.spier.common.bean.db.CPIMaterialInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mCreateTime" resultMap="CPIMaterialInfoResultMap" />
+		<parameter property="mChangeTime" resultMap="CPIMaterialInfoResultMap" />
+		<parameter property="mPixel" resultMap="CPIMaterialInfoResultMap" />
+		<parameter property="mUrl" resultMap="CPIMaterialInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 批量插入或更新 -->
+	<insert id="addOrUpdateBatch" parameterType="java.util.List">
+	    INSERT INTO ${tableName} 
+        (
+        	pixel, url, create_time, change_time
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+        	#{item.mPixel}, #{item.mUrl}, NOW(), NOW()
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+	        pixel = values(pixel), url = values(url), change_time = NOW()
+	</insert>
+	
+	<!-- 获取全部 -->
+	<select id="getAll" resultMap="CPIMaterialInfoResultMap">
+	    SELECT * FROM ${tableName}
+	</select>
+	
+	<!-- 根据id批量删除 -->
+	<delete id="deleteByIdBatch" parameterType="java.util.List">
+	     DELETE FROM ${tableName} WHERE _id in
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+	        <if test="item != null">
+	            #{item}
+	        </if>
+	    </foreach>
+	</delete>
+</mapper>

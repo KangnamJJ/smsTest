@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="me.gacl.mapping.orderMapper"就是me.gacl.mapping(包名)+orderMapper(orderMapper.xml文件去除后缀)
+-->
+<!-- 渠道数据映射 -->
+<mapper namespace="com.spier.mapper.file.INormalFileInfoMapper">
+     
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="normalFileInfoResultMap" type="com.spier.common.bean.db.file.NormalFileInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mSn" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mId" column="file_id" />
+		<result property="mFileDesc" column="file_desc" />
+		<result property="mFileVerCode" column="file_ver" />
+		<result property="mFileHashCode" column="file_hash" />
+		<result property="mFilePath" column="file_path" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="NormalFileInfoParamMap" type="com.spier.common.bean.db.file.NormalFileInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mId" resultMap="channelInfoResultMap" />
+		<parameter property="mFileDesc" resultMap="channelInfoResultMap" />
+		<parameter property="mFileVerCode" resultMap="channelInfoResultMap" />
+		<parameter property="mFileHashCode" resultMap="channelInfoResultMap" />
+		<parameter property="mFilePath" resultMap="channelInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 插入普通文件信息 -->
+	<insert id="insertFileInfo" useGeneratedKeys="true" keyProperty="info.mSn" keyColumn="_id"
+	    parameterType="com.spier.common.bean.db.file.NormalFileInfo" parameterMap="NormalFileInfoParamMap">
+	    insert into ${tableName} (file_id, file_desc, file_ver, file_hash, file_path, file_url)
+	    values 
+	    (#{info.mId},#{info.mFileDesc},#{info.mFileVerCode},#{info.mFileHashCode},#{info.mFilePath},#{info.mFileUrl})
+	</insert>
+	
+	<!-- 根据文件id查询文件记录 -->
+	<select id="findFileRecordById" parameterType="java.lang.String" resultMap="normalFileInfoResultMap">
+	    select * from ${tableName} where file_id=#{id}
+	</select>
+	
+	<!-- 根据文件序列号查询文件记录 -->
+	<select id="findFileRecordByInd" parameterType="int" resultMap="normalFileInfoResultMap">
+	    select * from ${tableName} where _id=#{ind}
+	</select>
+	
+	<!-- 文件信息更新操作 -->
+	<update id="updateFileInfoByInd" parameterType="com.spier.common.bean.db.file.NormalFileInfo" parameterMap="NormalFileInfoParamMap">
+	    update ${tableName} t set t.file_id=#{info.mId}, t.file_desc=#{info.mFileDesc}, t.file_ver=#{info.mFileVerCode}, 
+	    	t.file_hash=#{info.mFileHashCode}, t.file_path=#{info.mFilePath}, t.file_url=#{info.mFileUrl}
+	    where t._id=#{ind}
+	</update>
+	
+	<delete id="deleteFileInfoById" parameterType="int">
+	    delete from ${tableName} where file_id=#{id}
+	</delete>
+	
+	<!-- 获取所有信息 -->
+	<select id="getAll" resultMap="normalFileInfoResultMap">
+	    select * from ${tableName}
+	</select>
+	
+</mapper>

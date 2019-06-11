@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spier.mapper.task.ISyncTaskStatisticsMapper">
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="SyncTaskStatisticsInfoResultMap" type="com.spier.common.bean.db.task.SyncTaskExecResult" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mId" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mOfferId" column="offer_id" />
+		<result property="mUserId" column="user_id" />
+		<result property="mChanNo" column="chan_no" />
+		<result property="mAppName" column="pkg_name" />
+		<result property="mTaskState" column="task_state" />
+		<result property="mCreateTime" column="create_time" />
+		<result property="mChangeTime" column="change_time" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="SyncTaskStatisticsInfoParamMap" type="com.spier.common.bean.db.task.SyncTaskExecResult" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mOfferId" resultMap="SyncTaskStatisticsInfoResultMap" />
+		<parameter property="mUserId" resultMap="SyncTaskStatisticsInfoResultMap" />
+		<parameter property="mChanNo" resultMap="SyncTaskStatisticsInfoResultMap" />
+		<parameter property="mAppName" resultMap="SyncTaskStatisticsInfoResultMap" />
+		<parameter property="mTaskState" resultMap="SyncTaskStatisticsInfoResultMap" />
+		<parameter property="mCreateTime" resultMap="SyncTaskStatisticsInfoResultMap" />
+		<parameter property="mChangeTime" resultMap="SyncTaskStatisticsInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 根据用户名、渠道号、安装激活的应用包名插入或更新 -->
+	<insert id="insertOrUpdateAccording2User" parameterMap="SyncTaskStatisticsInfoParamMap" 
+	    useGeneratedKeys="true" keyProperty="task.mId" keyColumn="_id">
+		<!-- 检查是否存在 -->
+		<selectKey keyProperty="cnt" order="BEFORE" resultType="int">
+		    SELECT count(*) as cnt FROM ${tableName} WHERE
+		    user_id = #{task.mUserId} AND chan_no = #{task.mChanNo} AND pkg_name = #{task.mAppName}
+		</selectKey>
+		
+		<!-- 存在则更新 -->
+		<if test="cnt == 0">
+		    INSERT INTO ${tableName} 
+	        (
+	        	offer_id, user_id, chan_no, pkg_name, task_state,
+	        	create_time, change_time
+	        )
+	        VALUES
+	        (
+	        	#{task.mOfferId}, #{task.mUserId}, #{task.mChanNo}, #{task.mAppName}, #{task.mTaskState},
+	        	NOW(), NOW()
+	        )
+		</if>
+		
+		<!-- 不存在则插入 -->
+		<if test="cnt > 0">
+		    UPDATE ${tableName} t 
+		    SET t.offer_id = #{task.mOfferId}, t.task_state = #{task.mTaskState}, t.change_time = NOW()
+		    WHERE t.user_id = #{task.mUserId} AND t.chan_no = #{task.mChanNo} AND t.pkg_name = #{task.mAppName}
+		</if>
+		
+	</insert>
+	
+	<!-- 获取全部 -->
+	<select id="getAll" resultMap="SyncTaskStatisticsInfoResultMap">
+	    SELECT * FROM ${tableName}
+	</select>
+	
+	<!-- 根据offerid获取全部记录 -->
+	<select id="getRecordsByOfferId" parameterType="java.lang.String" resultMap="SyncTaskStatisticsInfoResultMap">
+	    SELECT * FROM ${tableName} WHERE offer_id = #{id}
+	</select>
+	
+	<!-- 根据用户信息获取其相关任务 -->
+	<select id="getRecordsByUserInfo" parameterType="java.lang.String" resultMap="SyncTaskStatisticsInfoResultMap">
+	    SELECT * FROM ${tableName} 
+	    WHERE user_id = #{user} AND chan_no = #{chan}
+	</select>
+	
+	<!-- 根据offerId批量删除 -->
+	<delete id="deleteByIdsBatch" parameterType="java.util.List">
+	    DELETE FROM ${tableName} WHERE offer_id in
+	    <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+	        <if test="item != null">
+	            #{item}
+	        </if>
+	    </foreach>
+	</delete>
+</mapper>

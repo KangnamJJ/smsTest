@@ -1,0 +1,73 @@
+server:
+  port: 8081
+  tomcat.uri-encoding: UTF-8
+#context-path: /sdkserver
+ 
+spring:
+  profiles:
+    active: prod
+  datasource:
+    url: jdbc:mysql://54.202.114.153:3306/sdk_server?useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    username: root
+    password: 1234567890
+    driverClassName: com.mysql.cj.jdbc.Driver
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 配置获取连接等待超时的时间
+    # 下面为连接池的补充设置，应用到上面所有数据源中
+    # 初始化大小，最小，最大
+    initialSize: 10
+    minIdle: 10
+    maxActive: 50
+    # 配置获取连接等待超时的时间
+    maxWait: 3000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 30000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 30000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,wall,slf4j
+  servlet:
+    multipart:
+      max-file-size: 10MB
+  redis:
+    cluster:
+      nodes: 34.220.26.134:6379,34.220.26.134:7379,34.220.26.134:8379
+    maxRedirects: 3
+    timeout: 300000
+    pool:
+      maxActive: 200
+      maxIdle: 50
+      minIdle: 10
+      maxWaitMillis: 15000
+      lifo: true
+      blockWhenExhausted: true
+      testOnBorrow: false
+      testOnReturn: false
+      testWhileIdle: true
+      timeBetweenEvictionRunsMillis: 30000        
+  dubbo:
+    applicationName: sdkserver
+    address: zookeeper://34.214.107.112:2181?backup=34.214.107.112:2182,34.214.107.112:2183
+    timeout: 30000
+    name: dubbo
+    port: 20882 
+    retries: 2        
+    
+#配置mybatis
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  config-location: classpath:mybatis/MybatisConfig.xml 
+
+    
+    
+
+
+  

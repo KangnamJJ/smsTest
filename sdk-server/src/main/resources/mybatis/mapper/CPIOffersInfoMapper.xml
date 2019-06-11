@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spier.mapper.job.ICPIOffersInfoMapper">
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="CPIOffersInfoResultMap" type="com.spier.common.bean.db.CPIOfferInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mOfferId" column="offer_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mCreateTime" column="create_time" />
+		<result property="mChangeTime" column="change_time" />
+		<result property="mOfferName" column="offer_name" />
+		<result property="mCategories" column="offer_cate" />
+		<result property="mDesc" column="offer_desc" />
+		<result property="mVersion" column="version" />
+		<result property="mIncent" column="incent" />
+		<result property="mTrackLink" column="track_link" />
+		<result property="mPreviewLink" column="preview_link" />
+		<result property="mFlow" column="flow" />
+		<result property="mMarket" column="market" />
+		<result property="mNeedDeviceInfo" column="need_dev_info" />
+		<result property="mCurrency" column="currency" />
+		<result property="mPlatforms" column="platforms" />
+		<result property="mCountries" column="countries" />
+		<result property="mPayout" column="payout" />
+		<result property="mPayoutType" column="payout_type" />
+		<result property="mCap" column="cap" />
+		<result property="mAllowNetworkTypes" column="allow_net_types" />
+		<result property="mForbiddenNetworkTypes" column="forbid_net_types" />
+		<result property="mSubAffBlacklist" column="sub_aff_black_list" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="CPIOffersInfoParamMap" type="com.spier.common.bean.db.CPIOfferInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mCreateTime" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mChangeTime" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mOfferName" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mCategories" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mDesc" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mVersion" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mIncent" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mTrackLink" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mPreviewLink" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mFlow" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mMarket" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mNeedDeviceInfo" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mCurrency" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mPlatforms" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mCountries" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mPayout" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mPayoutType" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mCap" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mAllowNetworkTypes" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mForbiddenNetworkTypes" resultMap="CPIOffersInfoResultMap" />
+		<parameter property="mSubAffBlacklist" resultMap="CPIOffersInfoResultMap" />
+	</parameterMap>
+	
+	<select id="getAll" resultMap="CPIOffersInfoResultMap">
+	    SELECT * FROM ${tableName}
+	</select>
+	
+	<!-- 批量查询 -->
+	<select id="getOffersByIds" parameterType="java.util.List" resultMap="CPIOffersInfoResultMap">
+	    SELECT * FROM ${tableName} WHERE offer_id in
+	    <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+	        #{id}
+	    </foreach>
+	</select>
+	
+	<delete id="deleteById" parameterType="int">
+	    DELETE FROM ${tableName} WHERE offer_id = #{id}
+	</delete>
+	
+	<!-- 批量添加，存在就忽略 -->
+	<insert id="batchInsertOffersOrUpdate" parameterType="java.util.List">
+	    INSERT INTO ${tableName} 
+        (
+        	offer_id, offer_name, offer_cate, offer_desc, version,
+        	incent, track_link, preview_link, flow, market, need_dev_info, currency,
+        	platforms, countries, payout, payout_type, cap, allow_net_types, 
+        	forbid_net_types, sub_aff_black_list, create_time, change_time
+        )
+        VALUES
+        <foreach collection="offers" item="item" index="index" separator=",">
+        (
+        	#{item.mOfferId}, #{item.mOfferName}, #{item.mCategories}, #{item.mDesc}, #{item.mVersion}, #{item.mIncent},
+        	#{item.mTrackLink}, #{item.mPreviewLink}, #{item.mFlow}, #{item.mMarket}, #{item.mNeedDeviceInfo},
+        	#{item.mCurrency}, #{item.mPlatforms}, #{item.mCountries}, #{item.mPayout}, #{item.mPayoutType}, #{item.mCap},
+        	#{item.mAllowNetworkTypes}, #{item.mForbiddenNetworkTypes}, #{item.mSubAffBlacklist}, 
+        	NOW(), NOW()
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+	        offer_name = values(offer_name), offer_cate = values(offer_cate), offer_desc = values(offer_desc),
+	        version = values(version), incent = values(incent), track_link = values(track_link),
+	        preview_link = values(preview_link), flow = values(flow), market = values(market), 
+	        need_dev_info = values(need_dev_info), currency = values(currency), platforms = values(platforms),
+	        countries = values(countries), payout = values(payout), payout_type = values(payout_type),
+	        cap = values(cap), allow_net_types = values(allow_net_types), forbid_net_types = values(forbid_net_types),
+	        sub_aff_black_list = values(sub_aff_black_list), change_time = NOW()
+	</insert>
+	
+	<!-- 批量清理 -->
+	<delete id="batchClearOffers" parameterType="java.util.List">
+	    DELETE FROM ${tableName} WHERE offer_id in
+	    <foreach collection="offerIds" item="item" index="index" open="(" separator="," close=")">
+	        <if test="item != null">
+	            #{item}
+	        </if>
+	    </foreach>
+	</delete>
+	
+</mapper>

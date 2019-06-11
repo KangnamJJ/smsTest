@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spier.mapper.referrer.IReferrerMapper">
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="ReferrerInfoResultMap" type="com.spier.common.bean.db.referrer.ReferrerInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mInd" column="_id" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mChan" column="chan" />
+		<result property="mApp" column="app" />
+		<result property="mUID" column="uid" />
+		<result property="mIP" column="ip" />
+		<result property="mReferrer" column="ref" />
+		<result property="mNotified" column="notif_state"/>
+		<result property="mCreateTime" column="create_time" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="ReferrerInfoParamMap" type="com.spier.common.bean.db.referrer.ReferrerInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mChan" resultMap="ReferrerInfoResultMap" />
+		<parameter property="mApp" resultMap="ReferrerInfoResultMap" />
+		<parameter property="mUID" resultMap="ReferrerInfoResultMap" />
+		<parameter property="mIP" resultMap="ReferrerInfoResultMap" />
+		<parameter property="mNotified" resultMap="ReferrerInfoResultMap" />
+		<parameter property="mReferrer" resultMap="ReferrerInfoResultMap" />
+		<parameter property="mCreateTime" resultMap="ReferrerInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 根据渠道号获取配置信息 -->
+	<insert id="addRef" useGeneratedKeys="true" keyProperty="ref.mInd" keyColumn="_id"
+	    parameterType="com.spier.common.bean.db.referrer.ReferrerInfo" parameterMap="ReferrerInfoParamMap">
+	    INSERT into ${tabName} 
+	    (
+	    	chan, app, uid, ip, notif_state, ref, create_time
+	    )
+	    VALUES
+	    (
+	    	#{ref.mChan}, #{ref.mApp}, #{ref.mUID}, #{ref.mIP}, #{ref.mNotified}, #{ref.mReferrer}, NOW()
+	    )
+	</insert>
+	
+	<!-- 根据关键信息查询记录 -->
+	<select id="getRecordByChanPkgUser" resultMap="ReferrerInfoResultMap">
+	    SELECT * FROM ${tabName}
+	    WHERE chan = #{chan} AND app = #{pkg} AND uid = #{uid}
+	</select>
+	
+	<!-- 查找未通知的 -->
+	<select id="getRecordsNotNotifiedLimit" resultMap="ReferrerInfoResultMap">
+	    SELECT * FROM ${tabName}
+	    WHERE notif_state = #{val}
+	    LIMIT 0,#{limit}
+	</select>
+	
+	<!-- 更新记录的转化状态 -->
+	<update id="markRecordNotifyState" parameterType="java.util.List">
+	    <foreach collection="inds" index="index" item="item"
+	        separator=";" open="" close="">
+	        <if test="item != null">
+	            UPDATE ${tabName} t 
+	            SET t.notif_state = #{val}
+	            WHERE t._id = #{item}
+	        </if>
+	    </foreach>
+	</update>
+	
+	<!-- 删除记录 -->
+	<delete id="deleteByInd" parameterType="int">
+	    DELETE FROM ${tabName} WHERE _id = #{ind}
+	</delete>
+</mapper>

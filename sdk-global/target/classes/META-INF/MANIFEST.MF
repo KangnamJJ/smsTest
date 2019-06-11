@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: sdk-global
+Implementation-Version: 1.0.0-SNAPSHOT
+Built-By: Administrator
+Implementation-Vendor-Id: com.spier.sdk
+Build-Jdk: 1.8.0_201
+Implementation-URL: http://projects.spring.io/spring-boot/sdk-project/
+ sdk-global/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

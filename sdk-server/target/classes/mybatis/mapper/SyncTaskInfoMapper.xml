@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spier.mapper.task.ISyncTaskInfoMapper">
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="SyncTaskInfoResultMap" type="com.spier.common.bean.db.task.SyncTaskInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mOfferId" column="offer_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mOfferName" column="offer_name" />
+		<result property="mCategories" column="offer_cate" />
+		<result property="mDesc" column="offer_desc" />
+		<result property="mVersion" column="version" />
+		<result property="mIncent" column="incent" />
+		<result property="mTrackLink" column="track_link" />
+		<result property="mPreviewLink" column="preview_link" />
+		<result property="mFlow" column="flow" />
+		<result property="mMarket" column="market" />
+		<result property="mNeedDeviceInfo" column="need_dev_info" />
+		<result property="mCurrency" column="currency" />
+		<result property="mPlatforms" column="platforms" />
+		<result property="mCountries" column="countries" />
+		<result property="mPayout" column="payout" />
+		<result property="mPayoutType" column="payout_type" />
+		<result property="mCap" column="cap" />
+		<result property="mAllowNetworkTypes" column="allow_net_types" />
+		<result property="mForbiddenNetworkTypes" column="forbid_net_types" />
+		<result property="mSubAffBlacklist" column="sub_aff_black_list" />
+		<result property="mCampaign" column="campaign" />
+		<result property="mPkgName" column="pkg" />
+		<result property="mCampaignDesc" column="camp_description" />
+		<result property="mIconsIds" column="icon_ids" />
+		<result property="mMaterialsIds" column="mat_ids" />
+		<result property="mSwitch" column="switcher" />
+		<result property="mFinishedCount" column="finished" />
+		<result property="mCreateTime" column="create_time" />
+		<result property="mChangeTime" column="change_time" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="SyncTaskInfoParamMap" type="com.spier.common.bean.db.task.SyncTaskInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mOfferName" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mCategories" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mDesc" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mVersion" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mIncent" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mTrackLink" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mPreviewLink" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mFlow" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mMarket" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mNeedDeviceInfo" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mCurrency" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mPlatforms" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mCountries" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mPayout" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mPayoutType" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mCap" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mAllowNetworkTypes" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mForbiddenNetworkTypes" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mSubAffBlacklist" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mCampaign" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mPkgName" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mCampaignDesc" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mIconsIds" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mMaterialsIds" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mSwitch" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mFinishedCount" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mCreateTime" resultMap="SyncTaskInfoResultMap" />
+		<parameter property="mChangeTime" resultMap="SyncTaskInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 批量升级或更新 -->
+	<insert id="updateOrInsert" parameterType="java.util.List">
+	    INSERT INTO ${tableName} 
+        (
+        	offer_id, offer_name, offer_cate, offer_desc, version,
+        	incent, track_link, preview_link, flow, market, need_dev_info, currency,
+        	platforms, countries, payout, payout_type, cap, allow_net_types, 
+        	forbid_net_types, sub_aff_black_list, campaign, pkg, camp_description, 
+        	icon_ids, mat_ids, switcher, finished, create_time, change_time
+        )
+        VALUES
+        <foreach collection="tasks" item="item" index="index" separator=",">
+        (
+        	#{item.mOfferId}, #{item.mOfferName}, #{item.mCategories}, #{item.mDesc}, #{item.mVersion}, #{item.mIncent},
+        	#{item.mTrackLink}, #{item.mPreviewLink}, #{item.mFlow}, #{item.mMarket}, #{item.mNeedDeviceInfo},
+        	#{item.mCurrency}, #{item.mPlatforms}, #{item.mCountries}, #{item.mPayout}, #{item.mPayoutType}, #{item.mCap},
+        	#{item.mAllowNetworkTypes}, #{item.mForbiddenNetworkTypes}, #{item.mSubAffBlacklist}, 
+        	#{item.mCampaign}, #{item.mPkgName}, #{item.mCampaignDesc}, #{item.mIconsIds}, #{item.mMaterialsIds}, 
+        	#{item.mSwitch}, #{item.mFinishedCount}, NOW(), NOW()
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+	        offer_name = values(offer_name), offer_cate = values(offer_cate), offer_desc = values(offer_desc),
+	        version = values(version), incent = values(incent), track_link = values(track_link),
+	        preview_link = values(preview_link), flow = values(flow), market = values(market), 
+	        need_dev_info = values(need_dev_info), currency = values(currency), platforms = values(platforms),
+	        countries = values(countries), payout = values(payout), payout_type = values(payout_type),
+	        cap = values(cap), allow_net_types = values(allow_net_types), forbid_net_types = values(forbid_net_types),
+	        sub_aff_black_list = values(sub_aff_black_list), campaign = values(campaign), pkg = values(pkg),
+	        camp_description = values(camp_description), icon_ids = values(icon_ids), mat_ids = values(mat_ids),
+	        switcher = values(switcher), finished = values(finished), change_time = NOW()
+	</insert>
+	
+	<!-- 获取全部 -->
+	<select id="getAll" resultMap="SyncTaskInfoResultMap">
+	    SELECT * FROM ${tableName}
+	</select>
+	
+	<!-- 根据offerid获取任务 -->
+	<select id="getTaskByOfferId" parameterType="java.lang.String" resultMap="SyncTaskInfoResultMap">
+	    SELECT * FROM ${tableName} WHERE offer_id = #{offerId}
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteByIdsBatch" parameterType="java.util.List">
+	    DELETE FROM ${tableName} WHERE offer_id in
+	    <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+	        <if test="item != null">
+	            #{item}
+	        </if>
+	    </foreach>
+	</delete>
+</mapper>

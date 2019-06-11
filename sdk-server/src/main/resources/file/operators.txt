@@ -1,0 +1,36 @@
+AD---Mobiland
+AE---du
+AE---Etisalat
+TH---ACT Mobile
+TH---Advanced Info Service
+TH---CAT CDMA
+TH---DTAC
+TH---True Move
+TH---WCS IQ
+MY---ATUR 450
+MY---Baraka Telecom Sdn Bhd(MVNE)
+MY---Celcom
+MY---DiGi
+MY---DiGi Telecommunications
+MY---Electcoms Wireless Sdn Bhd
+MY---Maxis
+MY---Telekom Malaysia Berhad for PSTN SMS
+MY---TM Homeline
+MY---Tune Talk Sdn Bhd
+MY---U Mobile
+MY---Yes
+US---Advantage
+US---Aeris
+US---Airadigm
+US---Airlink PCS
+US---Airpeak
+US---Airtel
+US---Alaska Digitel
+US---Altel
+US---AmeriLink PCS
+US---AT&T
+US---AT&T Mobility
+US---Caprock
+US---Carolina Phone
+US---Cell One Amarillo
+US---Cellular One

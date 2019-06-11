@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spier.mapper.table.ITableManagerMapper" >
+    <!-- 检查表是否存在 -->
+    <select id="checkTableExists" parameterType="String" resultType="Boolean">  
+        select count(*)  
+        from information_schema.TABLES  
+        where LCASE(table_name)=#{tableName} 
+    </select>
+    
+    <!-- 删除表 -->
+    <update id="dropTable">  
+        DROP TABLE IF EXISTS ${tableName} 
+    </update>  
+    
+    <!-- 创建表 -->
+    <update id="createTable" parameterType="String">  
+        CREATE TABLE ${tableName} (${sqlcmd}) 
+    </update> 
+    
+    <!-- 清空表 -->
+    <update id="clearTable" parameterType="String">  
+        TRUNCATE TABLE ${tableName}
+    </update>
+</mapper>

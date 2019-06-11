@@ -1,0 +1,20 @@
+server:
+  port: 8080
+  context-path: /sdk-server  
+  tomcat.uri-encoding: UTF-8
+
+spring:
+  profiles:
+    active: prod
+  mvc: 
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  servlet:
+    multipart:
+      max-file-size: 10MB 
+  dubbo:
+    applicationName: sdkweb
+    address: zookeeper://34.214.107.112:2181?backup=34.214.107.112:2182,34.214.107.112:2183
+    timeout: 30000
+    retries: 2           

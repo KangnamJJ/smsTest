@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="me.gacl.mapping.orderMapper"就是me.gacl.mapping(包名)+orderMapper(orderMapper.xml文件去除后缀)
+-->
+<!-- 手机数据映射 -->
+<mapper namespace="com.spier.mapper.spot.ISpotInfoMapper">
+     
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="spotInfoResultMap" type="com.spier.entity.SpotInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mIndex" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mChanNo" column="ch_no" />
+		<result property="mAppName" column="app" />
+		<result property="mUid" column="user" />
+		<result property="mFlowId" column="session" />
+		<result property="mType" column="type" />
+		<result property="mTag" column="tag" />
+		<result property="mInfo" column="msg" />
+		<result property="mChangeTime" column="change_time" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="spotInfoParamMap" type="com.spier.entity.SpotInfo" >
+	    <parameter property="mIndex" resultMap="spotInfoResultMap" />
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mChanNo" resultMap="spotInfoResultMap" />
+		<parameter property="mAppName" resultMap="spotInfoResultMap" />
+		<parameter property="mUid" resultMap="spotInfoResultMap" />
+		<parameter property="mFlowId" resultMap="spotInfoResultMap" />
+		<parameter property="mType" resultMap="spotInfoResultMap" />
+		<parameter property="mTag" resultMap="spotInfoResultMap" />
+		<parameter property="mInfo" resultMap="spotInfoResultMap" />
+		<parameter property="mChangeTime" resultMap="spotInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 新增任务信息 -->
+	<!-- useGeneratedKeys="true" 表示给主键设置自增长 -->
+	<!-- keyProperty="userId"  表示将自增长后的Id赋值给实体类中的userId字段。 -->
+	<insert id="addRecord" useGeneratedKeys="true" keyProperty="spot.mIndex" keyColumn="_id"
+	    parameterType="com.spier.entity.SpotInfo" parameterMap="spotInfoParamMap">
+	    insert into ${tableName} (ch_no, app, user, session, type, tag, msg, change_time)
+	    values 
+	    (
+	    	#{spot.mChanNo}, #{spot.mAppName}, #{spot.mUid}, #{spot.mFlowId},
+	    	#{spot.mType}, #{spot.mTag}, #{spot.mInfo}, NOW()
+	    )
+	</insert>
+	
+	<!-- 根据序列号查询任务信息 -->
+	<select id="getSpotsByKeyUser" resultMap="spotInfoResultMap">
+	    select * from ${tableName} 
+	    where user=#{uid} and ch_no=#{chanNo}
+	</select>
+
+	<!-- 根据条件查询埋点信息 -->
+	<select id="getSpotsByCondition" parameterType="java.util.Map" resultMap="spotInfoResultMap">
+	    select * from spot_info
+	    where 1 = 1
+	    <if test="channelNo != null">
+			and ch_no=#{channelNo}
+		</if>
+		<if test="appName != null">
+			and app=#{appName}
+		</if>
+		<if test="userId != null">
+			and user=#{userId}
+		</if>
+		<if test="startTime != null">
+			and change_time > #{startTime}
+		</if>
+		<if test="endTime != null">
+			and change_time &lt; #{endTime}
+		</if>
+	</select>
+	
+	<!-- 查询一页信息-->
+	<select id="getSpotsLimit" resultMap="spotInfoResultMap">
+	    select * from ${tableName} order by change_time desc limit #{from}, #{pageLimit}
+	</select>
+	
+	<!-- 查询数量 -->
+	<select id="getSpotsAmount" resultType="Integer">
+	    SELECT COUNT(_id) from ${tableName}
+	</select>
+	
+	<!-- 根据序列号查询任务信息 -->
+	<select id="getSpotByKeyConds" resultMap="spotInfoResultMap">
+	    select * from ${tableName} where user = #{uid} and ch_no = #{chanNo} and session = #{fid}
+	</select>
+	
+	<!-- 根据序列号更新任务信息 -->
+	<update id="updateRecord" parameterType="com.spier.entity.SpotInfo" parameterMap="spotInfoParamMap">
+	    update ${tableName} t set t.ch_no = #{spot.mChanNo}, t.app = #{spot.mAppName},
+	    		t.user = #{spot.mUid}, t.session = #{spot.mFlowId}, t.type = #{spot.mType},
+	    		t.tag = #{spot.mTag}, t.msg = #{spot.mInfo}, t.change_time = NOW()
+	    where t._id=#{spot.mIndex}
+	</update>
+	
+	<delete id="deleteByInd" parameterType="int">
+	    delete from ${tableName} where _id=#{ind}
+	</delete>
+</mapper>

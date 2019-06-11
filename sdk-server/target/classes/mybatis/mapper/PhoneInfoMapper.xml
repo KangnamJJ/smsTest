@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="me.gacl.mapping.orderMapper"就是me.gacl.mapping(包名)+orderMapper(orderMapper.xml文件去除后缀)
+-->
+<!-- 手机数据映射 -->
+<mapper namespace="com.spier.mapper.IPhoneInfoMapper">
+     
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="phoneInfoResultMap" type="com.spier.common.bean.db.PhoneInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mId" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mMac" column="mac" />
+		<result property="mIMEI" column="imei" />
+		<result property="mIMSI" column="imsi" />
+		<result property="mSerialNo" column="serial" />
+		<result property="mAndroidId" column="aid" />
+		<result property="mScreenWidth" column="swidth" jdbcType="INTEGER" />
+		<result property="mScreenHeight" column="sheight" jdbcType="INTEGER" />
+		<result property="mBrand" column="brand" />
+		<result property="mModel" column="model" />
+		<result property="mApiLevel" column="api_level" jdbcType="INTEGER" />
+		<result property="mCountryAbb" column="country" />
+		<result property="mOperator" column="operator" />
+		<result property="mFingerPrint" column="fingerprint" />
+		<result property="mUserAgent" column="ua" />
+		<result property="mIdentifyStr" column="identify_str" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="phoneInfoParamMap" type="com.spier.common.bean.db.PhoneInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mMac" resultMap="phoneInfoResultMap" />
+		<parameter property="mIMEI" resultMap="phoneInfoResultMap" />
+		<parameter property="mIMSI" resultMap="phoneInfoResultMap" />
+		<parameter property="mSerialNo" resultMap="phoneInfoResultMap" />
+		<parameter property="mAndroidId" resultMap="phoneInfoResultMap" />
+		<parameter property="mScreenWidth" resultMap="phoneInfoResultMap" />
+		<parameter property="mScreenHeight" resultMap="phoneInfoResultMap" />
+		<parameter property="mBrand" resultMap="phoneInfoResultMap" />
+		<parameter property="mModel" resultMap="phoneInfoResultMap" />
+		<parameter property="mApiLevel" resultMap="phoneInfoResultMap" />
+		<parameter property="mCountryAbb" resultMap="phoneInfoResultMap" />
+		<parameter property="mOperator" resultMap="phoneInfoResultMap" />
+		<parameter property="mFingerPrint" resultMap="phoneInfoResultMap" />
+		<parameter property="mUserAgent" resultMap="phoneInfoResultMap" />
+		<parameter property="mIdentifyStr" resultMap="phoneInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 插入手机信息 -->
+	<insert id="addRecord" useGeneratedKeys="true" keyProperty="info.mId" keyColumn="_id"
+	    parameterType="com.spier.common.bean.db.PhoneInfo" parameterMap="phoneInfoParamMap">
+	    INSERT INTO ${tableName} 
+	    (
+	    	mac, imei, imsi, serial, aid, swidth, sheight, brand, model, 
+	    	api_level, country, operator, fingerprint, ua, identify_str, create_time
+	    )
+	    VALUES 
+	    (
+	    	#{info.mMac}, #{info.mIMEI}, #{info.mIMSI}, #{info.mSerialNo}, #{info.mAndroidId}, #{info.mScreenWidth},
+	    	#{info.mScreenHeight}, #{info.mBrand}, #{info.mModel}, #{info.mApiLevel}, #{info.mCountryAbb}, #{info.mOperator},
+	    	#{info.mFingerPrint}, #{info.mUserAgent}, #{info.mIdentifyStr}, NOW()
+	    )
+	</insert>
+	
+	<!-- 根据序列号查询手机信息 -->
+	<select id="findRecordByInd" parameterType="int" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where _id=#{ind}
+	</select>
+	
+	<!-- 根据唯一标识查询手机信息 -->
+	<select id="findRecordByIdentifyStr" parameterType="int" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where identify_str=#{ids}
+	</select>
+	
+	<!-- 根据手机serialno查询整行 -->
+	<select id="findRecordsBySerial" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where serial=#{serialNo}
+	</select>
+	
+	<!-- 根据手机IMEI查询整行 -->
+	<select id="findRecordsByIMEI" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where imei=#{IMEI}
+	</select>
+	
+	<!-- 根据手机MAC查询整行 -->
+	<select id="findRecordsByMAC" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where mac=#{MAC}
+	</select>
+	
+	<!-- 根据手机androidId查询整行 -->
+	<select id="findRecordsByAndroidId" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from phone_info where aid=#{AndroidId}
+	</select>
+	
+	<!-- 根据手机IMEI或MAC查询整行 -->
+	<select id="findRecordsByIMEIorMAC" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where imei=#{IMEI} or mac=#{MAC}
+	</select>
+	
+	<!-- 根据手机IMEI或MAC查询整行 -->
+	<select id="findRecordsByIMEIorSerial" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from phone_info where imei=#{IMEI} or serial=#{serialNo}
+	</select>
+	
+	<!-- 根据手机IMEI或MAC查询  -->
+	<select id="findRecordsByMACorSerial" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where mac=#{MAC} or serial=#{serialNo}
+	</select>
+	
+	<!-- 根据手机IMEI或MAC或serial查询 -->
+	<select id="findRecordsByIMEIorMACorSerial" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from phone_info where imei=#{IMEI} or mac=#{MAC} or serial=#{serialNo}
+	</select>
+	
+	<!-- 根据手机IMEI或MAC或serial查询 -->
+	<select id="findRecordsByKWS" parameterType="java.lang.String" resultMap="phoneInfoResultMap">
+	    select * from ${tableName} where imei=#{IMEI} or mac=#{MAC} or serial=#{serialNo} or aid=#{androidId}
+	</select>
+	
+	<!-- 根据唯一身份标识查询记录对应的索引号 -->
+	<select id="findRecordIndByIdentifyStr" parameterType="java.lang.String" resultType="Integer">
+	    select _id from ${tableName} where identify_str=#{idstr}
+	</select>
+	
+	<!-- 文件信息更新操作 -->
+	<update id="updateRecordByInd" parameterType="com.spier.common.bean.db.PhoneInfo" parameterMap="phoneInfoParamMap">
+	    UPDATE ${tableName} t 
+	    SET 
+	    	t.mac = #{info.mMac}, t.imei = #{info.mIMEI}, t.imsi = #{info.mIMSI}, 
+	    	t.serial = #{info.mSerialNo}, t.aid = #{info.mAndroidId}, t.swidth = #{info.mScreenWidth}, 
+	    	t.sheight = #{info.mScreenHeight}, t.brand = #{info.mBrand}, t.model = #{info.mModel}, 
+	    	t.api_level = #{info.mApiLevel}, t.country = #{info.mCountryAbb}, t.operator = #{info.mOperator},
+	    	t.fingerprint = #{info.mFingerPrint}, t.ua = #{info.mUserAgent},
+	    	t.identify_str = #{info.mIdentifyStr}
+	    where t._id = #{ind}
+	</update>
+	
+	<!-- 更新国家和运营商 -->
+	<update id="updateCountryAndOp" parameterType="java.lang.String">
+	    <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            SELECT COUNT(*) FROM ${tabName} WHERE identify_str = #{idstr}
+        </selectKey>
+        <if test="count > 0">
+            UPDATE ${tabName} t 
+            SET t.country = #{country}, t.operator = #{op} 
+            WHERE identify_str = #{idstr}
+        </if>
+        
+        <if test="count == 0">
+            UPDATE ${tabName} t 
+            SET t.country = t.country 
+            WHERE identify_str = #{idstr}
+        </if>
+	</update>
+	
+	<!-- 根据ind删除记录 -->
+	<delete id="deleteRecordByInd" parameterType="int">
+	    delete from ${tableName} where _id=#{ind}
+	</delete>
+	
+</mapper>

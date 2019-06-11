@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.spier.mapper.IOperatorsInfoMapper" >
+    
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="operatorsInfoResultMap" type="com.spier.common.bean.db.OperatorInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mIndex" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mCountryAbb" column="abb" />
+		<result property="mOpName" column="op" />
+		<result property="mMCC" column="mcc" />
+		<result property="mMNC" column="mnc" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="operatorsInfoParamMap" type="com.spier.common.bean.db.OperatorInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mCountryAbb" resultMap="operatorsInfoResultMap" />
+		<parameter property="mOpName" resultMap="operatorsInfoResultMap" />
+		<parameter property="mMCC" resultMap="operatorsInfoResultMap" />
+		<parameter property="mMNC" resultMap="operatorsInfoResultMap" />
+	</parameterMap>
+	
+    <!-- 插入数据 -->
+    <insert id="addOperator" useGeneratedKeys="true" keyProperty="info.mIndex" keyColumn="_id"
+        parameterType="com.spier.common.bean.db.OperatorInfo" parameterMap="operatorsInfoParamMap">
+        insert into ${tableName}
+        (abb, op, mcc, mnc)
+        values
+        (#{info.mCountryAbb}, #{info.mOpName}, #{info.mMCC}, #{info.mMNC})
+    </insert>
+    
+    <!-- 批量插入数据 -->
+    <insert id="addOperatorsBatch" parameterType="java.util.List">
+        <selectKey resultType="java.lang.Integer" keyProperty="_id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ${tableName}
+        (abb, op, mcc, mnc)
+        values
+        <foreach collection="ops" item="operator" index="index" separator=",">
+            (
+            #{operator.mCountryAbb}, #{operator.mOpName}, #{operator.mMCC}, #{operator.mMNC}
+            )
+        </foreach>
+    </insert>
+    
+    <!-- 根据简称获取运营商信息 -->
+    <select id="getOperatorsByCountryAbb" parameterType="String" resultMap="operatorsInfoResultMap">
+        select * from ${tableName} where abb=#{country}
+    </select>
+    
+    <!-- 根据mcc文本查询国家简称 -->
+    <select id="getCountryAbbByMCC" parameterType="String" resultType="String">
+        select abb from ${tableName} where mcc=#{mcc}
+    </select>
+    
+    <!-- 根据国家简称和mnc文本查询运营商名称 -->
+    <select id="getOperatorNameByAbbMNC" parameterType="String" resultType="String">
+        select op from ${tableName} where mnc = #{mnc} and abb = #{abb}
+    </select>
+    
+    <!-- 根据国家简称和运营商名称查找运营商名称的正规写法。忽略大小写 -->
+    <select id="findOperatorNameByAbbAndOpTxtIgnoreCase" parameterType="String" resultType="String">
+        SELECT DISTINCT(op) FROM ${tableName} WHERE abb = #{abb} and op LIKE CONCAT('%',#{opTxt},'%')
+    </select>
+    
+    <!-- 统计有多少条数据 -->
+    <select id="getOperatorsCount" parameterType="String" resultType="int">
+        select count(_id) from ${tableName}
+    </select>
+    
+    <select id="getAll" parameterType="String" resultMap="operatorsInfoResultMap">
+        select * from ${tableName}
+    </select>
+</mapper>

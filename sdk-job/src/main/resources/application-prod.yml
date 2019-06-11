@@ -1,0 +1,14 @@
+server:
+  port: 8081
+  context-path: /sdk-job
+  tomcat.uri-encoding: UTF-8
+  
+spring:
+  profiles:
+    active: prod
+  dubbo:
+    applicationName: sdk-job
+    address: zookeeper://34.214.107.112:2181?backup=34.214.107.112:2182,34.214.107.112:2183
+    timeout: 30000
+    retries: 2  
+  

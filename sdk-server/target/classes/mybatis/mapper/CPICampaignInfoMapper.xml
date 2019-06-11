@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spier.mapper.job.ICPICampaignInfoMapper">
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="CPICampaignInfoResultMap" type="com.spier.common.bean.db.CPICampaignInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mOfferIds" column="offer_ids" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mCreateTime" column="create_time" />
+		<result property="mChangeTime" column="change_time" />
+		<result property="mCampaign" column="campaign" />
+		<result property="mPkgName" column="pkg" />
+		<result property="mDesc" column="camp_desc" />
+		<result property="mIconIds" column="icon_ids" />
+		<result property="mMaterialIds" column="mat_ids" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="CPICampaignInfoParamMap" type="com.spier.common.bean.db.CPICampaignInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mCreateTime" resultMap="CPICampaignInfoResultMap" />
+		<parameter property="mChangeTime" resultMap="CPICampaignInfoResultMap" />
+		<parameter property="mCampaign" resultMap="CPICampaignInfoResultMap" />
+		<parameter property="mPkgName" resultMap="CPICampaignInfoResultMap" />
+		<parameter property="mDesc" resultMap="CPICampaignInfoResultMap" />
+		<parameter property="mIconIds" resultMap="CPICampaignInfoResultMap" />
+		<parameter property="mMaterialIds" resultMap="CPICampaignInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 批量插入或更新操作 -->
+	<insert id="addOrUpdateBatch" parameterType="java.util.List">
+	    INSERT INTO ${tableName} 
+        (
+        	campaign, pkg, camp_desc, icon_ids, mat_ids, offer_ids, create_time, change_time
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+        	#{item.mCampaign}, #{item.mPkgName}, #{item.mDesc}, #{item.mIconIds}, 
+        	#{item.mMaterialIds}, #{item.mOfferIds}, NOW(), NOW()
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+	        campaign = values(campaign), pkg = values(pkg), camp_desc = values(camp_desc),
+	        icon_ids = values(icon_ids), mat_ids = values(mat_ids), change_time = NOW()
+	</insert>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteByIdsBatch" parameterType="java.util.List">
+	    DELETE FROM ${tableName} WHERE offer_ids in
+	    <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+	        <if test="item != null">
+	            #{item}
+	        </if>
+	    </foreach>
+	</delete>
+	
+	<!-- 获取全部 -->
+	<select id="getAll" resultMap="CPICampaignInfoResultMap">
+	    SELECT * FROM ${tableName}
+	</select>
+</mapper>

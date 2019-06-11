@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="me.gacl.mapping.orderMapper"就是me.gacl.mapping(包名)+orderMapper(orderMapper.xml文件去除后缀)
+-->
+<!-- 用户数据映射 -->
+<mapper namespace="com.spier.mapper.task.ITaskStatisticsInfoMapper">
+     
+    <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap id="taskStatisticsInfoResultMap" type="com.spier.common.bean.db.task.TaskExecResultInfo" >
+		<!-- 用id属性来映射主键字段 -->
+		<id property="mIndex" column="_id" jdbcType="INTEGER" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mTaskFlowId" column="task_flow_id" />
+		<result property="mTaskId" column="task_id" />
+		<result property="mChanId" column="chan_no" />
+		<result property="mAppName" column="app_name" />
+		<result property="mUserId" column="user_id" />
+		<result property="mPhoneNum" column="phone_num" />
+		<result property="mState" column="task_state" />
+		<result property="mClickURL" column="click_url" />
+		<result property="mChangeTime" column="change_time" />
+	</resultMap>
+	
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<parameterMap id="taskStatisticsInfoParamMap" type="com.spier.common.bean.db.task.TaskExecResultInfo" >
+		<!-- 用result属性来映射非主键字段 -->
+		<parameter property="mTaskFlowId" resultMap="taskStatisticsInfoResultMap" />
+		<parameter property="mTaskId" resultMap="taskStatisticsInfoResultMap" />
+		<parameter property="mChanId" resultMap="taskStatisticsInfoResultMap" />
+		<parameter property="mAppName" resultMap="taskStatisticsInfoResultMap" />
+		<parameter property="mUserId" resultMap="taskStatisticsInfoResultMap" />
+		<parameter property="mPhoneNum" resultMap="taskStatisticsInfoResultMap" />
+		<parameter property="mState" resultMap="taskStatisticsInfoResultMap" />
+		<parameter property="mClickURL" resultMap="taskStatisticsInfoResultMap" />
+	</parameterMap>
+	
+	<!-- 新增记录 -->
+	<insert id="addStatisticsInfo"  useGeneratedKeys="true" keyProperty="info.mIndex" keyColumn="_id"
+	    parameterType="com.spier.common.bean.db.task.TaskExecResultInfo" parameterMap="taskStatisticsInfoParamMap">
+		
+	    insert into ${tableName} 
+	    (
+	    	task_flow_id, task_id, chan_no, app_name, user_id, phone_num, task_state, 
+	    	change_time, click_url
+	    ) 
+	    values 
+	    (
+	    	#{info.mTaskFlowId}, #{info.mTaskId}, #{info.mChanId}, #{info.mAppName}, #{info.mUserId},
+	    	#{info.mPhoneNum}, #{info.mState}, NOW(), #{info.mClickURL}
+	    )
+	</insert>
+	
+	<!-- 通过flowId更新 -->
+	<update id="updateStatisticsInfoByFlowId" parameterType="com.spier.common.bean.db.task.TaskExecResultInfo" 
+	    parameterMap="taskStatisticsInfoParamMap">
+	    update ${tableName} t set t.task_flow_id=#{info.mTaskFlowId}, t.task_id=#{info.mTaskId}, t.chan_no=#{info.mChanId}, 
+	    t.app_name=#{info.mAppName}, t.user_id=#{info.mUserId}, t.phone_num=#{info.mPhoneNum}, t.task_state=#{info.mState}, 
+	    t.change_time=NOW(), t.click_url=#{info.mClickURL}
+	    where t.task_flow_id=#{info.mTaskFlowId}
+	</update>
+	
+	<!-- 用户会话状态更新-->
+	<update id="updateStatisticsInfoByIndex" parameterType="com.spier.common.bean.db.task.TaskExecResultInfo" 
+	    parameterMap="taskStatisticsInfoParamMap">
+	    update ${tableName} t set t.task_flow_id=#{info.mTaskFlowId}, t.task_id=#{info.mTaskId}, t.chan_no=#{info.mChanId}, 
+	    t.app_name=#{info.mAppName}, t.user_id=#{info.mUserId}, t.phone_num=#{info.mPhoneNum}, t.task_state=#{info.mState},
+	    t.change_time=NOW(), t.click_url=#{info.mClickURL}
+	    where t._id=#{info.mIndex}
+	</update>
+	
+	<!-- 根据序列号查询用户信息 -->
+	<select id="findRecrodByIndex" parameterType="int" resultMap="taskStatisticsInfoResultMap">
+	    select * from ${tableName} where _id=#{ind}
+	</select>
+	
+	<!-- 根据关键字段查询信息行序列号-->
+	<select id="findRecordByFlowId" resultMap="taskStatisticsInfoResultMap">
+	    select * from ${tableName} 
+	    where task_flow_id=#{fid}
+	</select>
+	
+	<!-- 查找用户的所有记录 -->
+	<select id="findRecordsByUser" parameterType="java.lang.String" resultMap="taskStatisticsInfoResultMap">
+	    SELECT * FROM ${tableName}
+	    WHERE user_id = #{user}
+	</select>
+	
+	<!-- 找到某个用户所有完成的任务 -->
+	<select id="getTaskListByUserIdAndState" resultMap="taskStatisticsInfoResultMap">
+	    select * from ${tableName} 
+	    where user_id=#{uid} and task_state=#{state}
+	</select>
+	
+	<!-- 根据flowid找到对应记录的序列号 -->
+	<select id="getRecordIndexByFlowId" resultType="Integer">
+	    select _id from ${tableName} 
+	    where task_flow_id=#{fid}
+	</select>
+	
+	<!-- 根据ind删除记录 -->
+	<delete id="deleteRecordByIndex" parameterType="int">
+	    delete from ${tableName} where _id=#{ind}
+	</delete>
+	
+	<!-- 根据flowId删除记录 -->
+	<delete id="deleteRecordByFlowId" parameterType="string">
+	    delete from ${tableName} where task_flow_id=#{fid}
+	</delete>
+	
+</mapper>

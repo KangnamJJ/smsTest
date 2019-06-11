@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spier.mapper.job.TasksHistoryInfoMapper">
+    
+    <resultMap type="com.spier.common.bean.db.task.TasksHistoryInfo" id="TasksHistoryInfoResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="taskTotalCount"    column="task_total_count"    />
+        <result property="taskFinishedCount"    column="task_finished_count"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+	
+	<sql id="selectTasksHistoryInfoVo">
+        select id, task_id, task_total_count, task_finished_count, create_time from tasks_history_info
+    </sql>
+	
+    <select id="selectTasksHistoryInfoList" parameterType="com.spier.common.bean.db.task.TasksHistoryInfo" resultMap="TasksHistoryInfoResult">
+        <include refid="selectTasksHistoryInfoVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="taskId != null  and taskId != '' "> and task_id = #{taskId}</if>
+             <if test="taskTotalCount != null "> and task_total_count = #{taskTotalCount}</if>
+             <if test="taskFinishedCount != null "> and task_finished_count = #{taskFinishedCount}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+         </where>
+    </select>
+    
+    <select id="selectTasksHistoryInfoById" parameterType="Long" resultMap="TasksHistoryInfoResult">
+        <include refid="selectTasksHistoryInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTasksHistoryInfo" parameterType="com.spier.common.bean.db.task.TasksHistoryInfo">
+        insert into tasks_history_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="taskId != null  and taskId != ''  ">task_id,</if>
+			<if test="taskTotalCount != null  ">task_total_count,</if>
+			<if test="taskFinishedCount != null  ">task_finished_count,</if>
+			<if test="createTime != null  ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="taskId != null  and taskId != ''  ">#{taskId},</if>
+			<if test="taskTotalCount != null  ">#{taskTotalCount},</if>
+			<if test="taskFinishedCount != null  ">#{taskFinishedCount},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateTasksHistoryInfo" parameterType="com.spier.common.bean.db.task.TasksHistoryInfo">
+        update tasks_history_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null  and taskId != ''  ">task_id = #{taskId},</if>
+            <if test="taskTotalCount != null  ">task_total_count = #{taskTotalCount},</if>
+            <if test="taskFinishedCount != null  ">task_finished_count = #{taskFinishedCount},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteTasksHistoryInfoById" parameterType="Long">
+        delete from tasks_history_info where id = #{id}
+    </delete>
+	
+    <delete id="deleteTasksHistoryInfoByIds" parameterType="String">
+        delete from tasks_history_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>
